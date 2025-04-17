@@ -30,37 +30,49 @@ The **Swanand Inventory Management System** is a Django-based web application de
 
 ### 1. 🔁 Clone the Repository
 
-git clone https://github.com/Jenil7828/Swanand-inventory-management.git
-cd Swanand-inventory-management
-
+<pre>
+  git clone https://github.com/Jenil7828/Swanand-inventory-management.git
+  cd Swanand-inventory-management
+</pre>
 ### 2. 🐍 Create a Virtual Environment
+<pre>
+  python -m venv venv
+</pre>
 
-python -m venv venv
 
 Activate it:
-
-- **Windows**:
+<pre>
+  - **Windows**:
   .\venv\Scripts\activate
   
-- **Mac/Linux**:
+  - **Mac/Linux**:
   source venv/bin/activate
+</pre>
+
   
 
 ### 3. 📦 Install Dependencies
-
-pip install -r requirements.txt
+<pre>
+  pip install -r requirements.txt
+</pre>
 
 ### 4. 🛠️ Apply Migrations
 
-python manage.py migrate
+<pre>
+  python manage.py migrate
+</pre> 
 
 ### 5. 🔐 Create a Superuser (Optional)
 
-python manage.py createsuperuser
+<pre>
+  python manage.py createsuperuser
+</pre>
 
 ### 6. ▶️ Run the Server
 
-python manage.py runserver
+<pre>
+  python manage.py runserver
+</pre>
 
 Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
