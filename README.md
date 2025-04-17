@@ -67,7 +67,7 @@ Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 ---
 
 ## 📁 Folder Structure
-
+<pre lang="markdown"> ```plaintext
 inventory_management/               # 🌐 Main Django project directory
 ├── invent/                         # 📦 Django app: 'invent'
 │   ├── migrations/                 # 🔄 Database migration files
@@ -97,7 +97,7 @@ inventory_management/               # 🌐 Main Django project directory
 ├── manage.py                      # 🧰 Django management script
 ├── README.md                      # 📖 Project documentation
 └── requirements.txt               # 📦 Python dependencies
-
+ ``` </pre>
 ---
 
 ## 🧾 Exporting Data
