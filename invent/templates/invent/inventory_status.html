@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8" />
+  <title>Swanand Inventory Management - Inventory Status</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'css/inventory_status.css' %}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script src="{% static 'js/inventory_status.js' %}" defer></script>
+</head>
+
+<body>
+  <div class="system-header">Swanand Management System</div>
+  <header>Swanand Inventory Management - Inventory Status</header>
+  <button class="toggle-dark" id="toggleDarkMode">🌓</button>
+  <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+
+  <div class="sidebar" id="sidebar">
+    <h2>📦 Inventory</h2>
+    <a href="{% url 'index' %}">🏠 Home</a>
+    <a href="{% url 'company_product' %}">📋 Company Product</a>
+    <a href="{% url 'stock_transfer' %}">🚚 Stock Transfer</a>
+    <a href="{% url 'transaction_log' %}">🧾 Transaction Log</a>
+    <a href="{% url 'inventory_status' %}">📊 Inventory Status</a>
+  </div>
+
+  <div class="main-content">
+    <h1>📊 Inventory Status</h1>
+
+    <div class="section">
+      <form method="get">
+        <label for="location">Location:</label>
+        <select name="location" id="location" onchange="this.form.submit()">
+          <option value="All" {% if selected_location == 'All' %}selected{% endif %}>All Locations</option>
+          {% for loc, label in locations %}
+          <option value="{{ loc }}" {% if selected_location == loc %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+
+        <input type="text" name="search" placeholder="Search product..." value="{{ search_query|default:'' }}">
+        <button type="submit">Apply Filters</button>
+      </form>
+
+      <div class="export-buttons">
+        <form method="get" action="{% url 'export_inventory_csv' %}">
+          <input type="hidden" name="location" value="{{ selected_location }}">
+          <input type="hidden" name="search" value="{{ search_query|default:'' }}">
+          <button type="submit">📄 CSV</button>
+        </form>
+        <form method="get" action="{% url 'export_inventory_excel' %}">
+          <input type="hidden" name="location" value="{{ selected_location }}">
+          <input type="hidden" name="search" value="{{ search_query }}">
+          <button type="submit">📊 Excel</button>
+        </form>
+        <form method="get" action="{% url 'export_inventory_pdf' %}">
+          <input type="hidden" name="location" value="{{ selected_location }}">
+          <input type="hidden" name="search" value="{{ search_query }}">
+          <button type="submit">📕 PDF</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="section">
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Location</th>
+            <th>Current Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in inventory %}
+          <tr class="{% if item.quantity < 10 %}low-stock{% endif %}">
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.location }}</td>
+            <td>
+              <div style="text-align: left;">
+                <div style="background-color: #eee; border-radius: 5px; overflow: hidden; height: 20px;">
+                  <div style="height: 100%; width: {{ item.quantity }}%; max-width: 100%; background-color: {% if item.quantity < 10 %}#ff4d4d{% elif item.quantity < 30 %}#ffa500{% else %}#4CAF50{% endif %}; text-align: center; color: white; line-height: 20px;">
+                    {{ item.quantity }}
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="3">No inventory available for this selection.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if total_quantity %}
+        <tfoot>
+          <tr style="font-weight: bold;">
+            <td colspan="2">Total Stock</td>
+            <td>{{ total_quantity }}</td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+    </div>
+
+    <div class="section">
+      <h3>📧 Email Report</h3>
+      <form action="{% url 'email_inventory_report' %}" method="POST">
+        {% csrf_token %}
+        <label for="email">Enter Email:</label>
+        <input type="email" name="email" required placeholder="you@example.com">
+        <label for="format">Choose Format:</label>
+        <select name="format">
+          <option value="csv">CSV</option>
+          <option value="excel">Excel (XLSX)</option>
+          <option value="pdf">PDF</option>
+        </select>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <div class="section" id="charts-container">
+      <!-- Safe way to inject JSON -->
+      <script id="stock-data" type="application/json">
+        {{ inventory_data_json|safe }}
+      </script>
+
+
+      <!-- The charts will be rendered here dynamically -->
+    </div>
+  </div>
+
+  <footer>&copy; 2025 Swanand Inventory Management</footer>
+</body>
+
+</html>

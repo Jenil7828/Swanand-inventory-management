@@ -1,0 +1,542 @@
+<!-- transaction_log.html -->
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <title>Transaction Log - Swanand Inventory Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/transaction_log.css' %}" />
+
+</head>
+<body>
+  <div class="system-header">Swanand Management System</div>
+  <header>Swanand Inventory Management - Transition Log</header>
+  <button class="toggle-dark" id="toggleDarkMode">🌓</button>
+  <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+
+  <div class="sidebar" id="sidebar">
+    <h2>📦 Inventory</h2>
+    <a href="{% url 'index' %}">🏠 Home</a>
+    <a href="{% url 'company_product' %}">📋 Company Product</a>
+    <a href="{% url 'stock_transfer' %}">🚚 Stock Transfer</a>
+    <a href="{% url 'transaction_log' %}">🧾 Transaction Log</a>
+    <a href="{% url 'inventory_status' %}">📊 Inventory Status</a>
+  </div>
+
+  <div class="main-content">
+    <h1>🧾 Transaction Log</h1>
+
+    <div class="section">
+      <form method="get">
+        <input type="date" name="date" value="{{ request.GET.date }}">
+        <select name="location">
+          <option value="">All Locations</option>
+          {% for location in locations %}
+            <option value="{{ location }}" {% if request.GET.location == location %}selected{% endif %}>{{ location }}</option>
+          {% endfor %}
+        </select>
+        <input type="text" name="transaction_id" placeholder="Transaction ID" value="{{ request.GET.transaction_id }}">
+        <input type="text" name="product_name" placeholder="Product Name" value="{{ request.GET.product_name }}">
+        <button type="submit">Apply Filters</button>
+        <a href="{% url 'transaction_log' %}"><button type="button">Reset Filters</button></a>
+      </form>
+    </div>
+
+    <div class="section">
+      <h2>📋 Company Product Stock Entries</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Date</th>
+            <th>Company</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Cost</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in stock_entries %}
+          <tr>
+            <td>{{ entry.transactionId }}</td>
+            <td>{{ entry.date}}</td>
+            <td>{{ entry.company }}</td>
+            <td>{{ entry.product }}</td>
+            <td>{{ entry.quantity }}</td>
+            <td>₹{{ entry.totalCost }}</td>
+            <td>{{ entry.location }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7">No stock entries available.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <h4>Export Stock Entries</h4>
+        <div class="export-buttons">
+            <a href="{% url 'export_stock_entries_csv' %}" class="csv">📄 CSV</a>
+            <a href="{% url 'export_stock_entries_excel' %}" class="excel">📈 Excel</a>
+            <a href="{% url 'export_stock_entries_pdf' %}" class="pdf">📄 PDF</a>
+        </div>
+    </div>
+
+    <div class="section">
+      <h2>🔁 Stock Transfers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Date</th>
+            <th>From Location</th>
+            <th>To Location</th>
+            <th>Product</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for transfer in stock_transfers %}
+          <tr>
+            <td>{{ transfer.transactionId }}</td>
+            <td>{{ transfer.date }}</td>
+            <td>{{ transfer.fromLocation }}</td>
+            <td>{{ transfer.toLocation }}</td>
+            <td>{{ transfer.product }}</td>
+            <td>{{ transfer.quantity }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6">No stock transfers available.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <h4 style="margin-top: 30px;">Export Stock Transfers</h4>
+        <div class="export-buttons">
+            <a href="{% url 'export_stock_transfers_csv' %}" class="csv">📄 CSV</a>
+            <a href="{% url 'export_stock_transfers_excel' %}" class="excel">📈 Excel</a>
+            <a href="{% url 'export_stock_transfers_pdf' %}" class="pdf">📄 PDF</a>
+        </div>
+    </div>
+  </div>
+
+  <footer>© 2025 Swanand Inventory Management</footer>
+
+  <script src="{% static 'js/transaction_log.js' %}" defer></script>
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>Transaction Log - Swanand Inventory Management</title>-->
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--  <style>-->
+<!--    :root {-->
+<!--      &#45;&#45;bg-light: #f4f1ee;-->
+<!--      &#45;&#45;bg-dark: #1d1d1d;-->
+<!--      &#45;&#45;accent-light: #ffffff;-->
+<!--      &#45;&#45;accent-dark: #2b2b2b;-->
+<!--      &#45;&#45;text-light: #2d2d2d;-->
+<!--      &#45;&#45;text-dark: #eeeeee;-->
+<!--      &#45;&#45;primary-light: #cc5a71;-->
+<!--      &#45;&#45;primary-dark: #444;-->
+<!--      &#45;&#45;highlight-light: #e7dfd8;-->
+<!--      &#45;&#45;highlight-dark: #333;-->
+<!--    }-->
+
+<!--    * {-->
+<!--      box-sizing: border-box;-->
+<!--      transition: background-color 0.4s, color 0.4s;-->
+<!--    }-->
+
+<!--    body {-->
+<!--      font-family: 'Segoe UI', sans-serif;-->
+<!--      margin: 0;-->
+<!--      background-color: var(&#45;&#45;bg-light);-->
+<!--      color: var(&#45;&#45;text-light);-->
+<!--      overflow-x: hidden;-->
+<!--    }-->
+<!--     header {-->
+<!--      background-color: #cc5a71;-->
+<!--      color: white;-->
+<!--      padding: 1rem;-->
+<!--      text-align: center;-->
+<!--      font-size: 1.8rem;-->
+<!--    }-->
+
+<!--    .system-header {-->
+<!--      background-color: #333;-->
+<!--      color: white;-->
+<!--      padding: 1rem;-->
+<!--      text-align: center;-->
+<!--      font-size: 2rem;-->
+<!--      font-weight: bold;-->
+<!--    }-->
+
+<!--    body.dark-mode {-->
+<!--      background-color: var(&#45;&#45;bg-dark);-->
+<!--      color: var(&#45;&#45;text-dark);-->
+<!--    }-->
+
+<!--    .sidebar {-->
+<!--      position: fixed;-->
+<!--      top: 0;-->
+<!--      left: 0;-->
+<!--      width: 240px;-->
+<!--      height: 100vh;-->
+<!--      background-color: var(&#45;&#45;highlight-light);-->
+<!--      padding: 1.5rem 1rem;-->
+<!--      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);-->
+<!--      transition: transform 0.3s ease-in-out;-->
+<!--      z-index: 900;-->
+<!--    }-->
+
+<!--    body.dark-mode .sidebar {-->
+<!--      background-color: var(&#45;&#45;highlight-dark);-->
+<!--    }-->
+
+<!--    .sidebar.collapsed {-->
+<!--      transform: translateX(-100%);-->
+<!--    }-->
+
+<!--    .sidebar h2 {-->
+<!--      font-size: 1.5rem;-->
+<!--      margin-bottom: 1.5rem;-->
+<!--    }-->
+
+<!--    .sidebar a {-->
+<!--      display: block;-->
+<!--      font-size: 1.1rem;-->
+<!--      padding: 0.8rem;-->
+<!--      margin-bottom: 0.5rem;-->
+<!--      text-decoration: none;-->
+<!--      color: inherit;-->
+<!--      font-weight: 600;-->
+<!--      border-radius: 8px;-->
+<!--    }-->
+
+<!--    .sidebar a:hover {-->
+<!--      background-color: rgba(0, 0, 0, 0.05);-->
+<!--    }-->
+
+<!--    body.dark-mode .sidebar a:hover {-->
+<!--      background-color: rgba(255, 255, 255, 0.1);-->
+<!--    }-->
+
+<!--    .toggle-dark {-->
+<!--      position: fixed;-->
+<!--      top: 1rem;-->
+<!--      right: 1rem;-->
+<!--      padding: 8px 10px;-->
+<!--      border: none;-->
+<!--      background-color: var(&#45;&#45;primary-light);-->
+<!--      color: white;-->
+<!--      border-radius: 8px;-->
+<!--      cursor: pointer;-->
+<!--      font-size: 16px;-->
+<!--      z-index: 1001;-->
+<!--    }-->
+
+<!--    .toggle-sidebar {-->
+<!--      padding: 8px 10px;-->
+<!--      border: none;-->
+<!--      background-color: var(&#45;&#45;primary-light);-->
+<!--      color: white;-->
+<!--      border-radius: 0 8px 8px 0;-->
+<!--      cursor: pointer;-->
+<!--      font-size: 16px;-->
+<!--      position: fixed;-->
+<!--      top: 1rem;-->
+<!--      left: 240px;-->
+<!--      z-index: 1001;-->
+<!--    }-->
+
+<!--    body.dark-mode .toggle-dark,-->
+<!--    body.dark-mode .toggle-sidebar {-->
+<!--      background-color: var(&#45;&#45;primary-dark);-->
+<!--    }-->
+
+<!--    .main-content {-->
+<!--      margin-left: 260px;-->
+<!--      padding: 4rem 2rem 2rem 2rem;-->
+<!--      transition: margin-left 0.3s ease-in-out;-->
+<!--    }-->
+
+<!--    .sidebar.collapsed ~ .main-content {-->
+<!--      margin-left: 0;-->
+<!--    }-->
+
+<!--    .section {-->
+<!--      background: var(&#45;&#45;accent-light);-->
+<!--      border-radius: 12px;-->
+<!--      padding: 2rem;-->
+<!--      margin-bottom: 2rem;-->
+<!--      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);-->
+<!--    }-->
+
+<!--    body.dark-mode .section {-->
+<!--      background-color: var(&#45;&#45;accent-dark);-->
+<!--    }-->
+
+<!--    h1 {-->
+<!--      font-size: 2rem;-->
+<!--      margin-bottom: 1rem;-->
+<!--    }-->
+
+<!--    label {-->
+<!--      display: block;-->
+<!--      margin-top: 1rem;-->
+<!--      font-weight: bold;-->
+<!--    }-->
+
+<!--    input, select, button {-->
+<!--      padding: 0.6rem;-->
+<!--      margin: 0.3rem 0.5rem 1rem 0;-->
+<!--      font-size: 1rem;-->
+<!--      border-radius: 6px;-->
+<!--      border: 1px solid #ccc;-->
+<!--    }-->
+
+<!--    button {-->
+<!--      background-color: var(&#45;&#45;primary-light);-->
+<!--      color: white;-->
+<!--      font-weight: bold;-->
+<!--      border: none;-->
+<!--      cursor: pointer;-->
+<!--      transition: transform 0.2s;-->
+<!--    }-->
+
+<!--    button:hover {-->
+<!--      transform: translateY(-2px);-->
+<!--    }-->
+
+<!--    body.dark-mode button {-->
+<!--      background-color: var(&#45;&#45;primary-dark);-->
+<!--    }-->
+
+<!--    table {-->
+<!--      width: 100%;-->
+<!--      border-collapse: collapse;-->
+<!--      margin-top: 1rem;-->
+<!--    }-->
+
+<!--    th, td {-->
+<!--      padding: 12px;-->
+<!--      border: 1px solid #ccc;-->
+<!--      text-align: center;-->
+<!--    }-->
+
+<!--    th {-->
+<!--      background-color: var(&#45;&#45;highlight-light);-->
+<!--    }-->
+
+<!--    body.dark-mode th {-->
+<!--      background-color: var(&#45;&#45;highlight-dark);-->
+<!--    }-->
+
+<!--    footer {-->
+<!--      text-align: center;-->
+<!--      padding: 1rem;-->
+<!--      color: #777;-->
+<!--    }-->
+
+<!--    @media (max-width: 768px) {-->
+<!--      .main-content {-->
+<!--        margin-left: 0 !important;-->
+<!--      }-->
+
+<!--      .sidebar {-->
+<!--        z-index: 1000;-->
+<!--      }-->
+
+<!--      .toggle-sidebar {-->
+<!--        left: 1rem;-->
+<!--      }-->
+<!--    }-->
+
+<!--      .export-buttons {-->
+<!--          margin: 1rem 0;-->
+<!--          display: flex;-->
+<!--          gap: 1rem;-->
+<!--          flex-wrap: wrap;-->
+<!--        }-->
+
+<!--        .export-buttons a {-->
+<!--          text-decoration: none;-->
+<!--          padding: 0.6rem 1.2rem;-->
+<!--          border-radius: 8px;-->
+<!--          font-weight: 600;-->
+<!--          color: white;-->
+<!--          background-color: #6a6aeb; /* Light violet-blue */-->
+<!--          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);-->
+<!--          transition: transform 0.2s ease, background-color 0.3s ease;-->
+<!--        }-->
+
+<!--        .export-buttons a:hover {-->
+<!--          transform: translateY(-2px);-->
+<!--          background-color: #5656d4;-->
+<!--        }-->
+
+<!--        .export-buttons a.csv {-->
+<!--          background-color: #4caf50;-->
+<!--        }-->
+
+<!--        .export-buttons a.csv:hover {-->
+<!--          background-color: #3e9c42;-->
+<!--        }-->
+
+<!--        .export-buttons a.excel {-->
+<!--          background-color: #2196f3;-->
+<!--        }-->
+
+<!--        .export-buttons a.excel:hover {-->
+<!--          background-color: #1976d2;-->
+<!--        }-->
+
+<!--        .export-buttons a.pdf {-->
+<!--          background-color: #f44336;-->
+<!--        }-->
+
+<!--        .export-buttons a.pdf:hover {-->
+<!--          background-color: #d32f2f;-->
+<!--        }-->
+
+<!--        body.dark-mode .export-buttons a {-->
+<!--          color: #fff;-->
+<!--          box-shadow: none;-->
+<!--        }-->
+
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--  <div class="system-header">Swanand Management System</div>-->
+<!--  <header>Swanand Inventory Management - Transition Log</header>-->
+<!--  <button class="toggle-dark" id="toggleDarkMode">🌓</button>-->
+<!--  <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>-->
+
+<!--  <div class="sidebar" id="sidebar">-->
+<!--    <h2>📦 Inventory</h2>-->
+<!--    <a href="{% url 'index' %}">🏠 Home</a>-->
+<!--    <a href="{% url 'company_product' %}">📋 Company Product</a>-->
+<!--    <a href="{% url 'stock_transfer' %}">🚚 Stock Transfer</a>-->
+<!--    <a href="{% url 'transaction_log' %}">🧾 Transaction Log</a>-->
+<!--    <a href="{% url 'inventory_status' %}">📊 Inventory Status</a>-->
+<!--  </div>-->
+
+<!--  <div class="main-content">-->
+<!--    <h1>🧾 Transaction Log</h1>-->
+
+<!--    <div class="section">-->
+<!--      <form method="get">-->
+<!--        <input type="date" name="date" value="{{ request.GET.date }}">-->
+<!--        <select name="location">-->
+<!--          <option value="">All Locations</option>-->
+<!--          {% for location in locations %}-->
+<!--            <option value="{{ location }}" {% if request.GET.location == location %}selected{% endif %}>{{ location }}</option>-->
+<!--          {% endfor %}-->
+<!--        </select>-->
+<!--        <input type="text" name="transaction_id" placeholder="Transaction ID" value="{{ request.GET.transaction_id }}">-->
+<!--        <input type="text" name="product_name" placeholder="Product Name" value="{{ request.GET.product_name }}">-->
+<!--        <button type="submit">Apply Filters</button>-->
+<!--        <a href="{% url 'transaction_log' %}"><button type="button">Reset Filters</button></a>-->
+<!--      </form>-->
+<!--    </div>-->
+
+<!--    <div class="section">-->
+<!--      <h2>📋 Company Product Stock Entries</h2>-->
+<!--      <table>-->
+<!--        <thead>-->
+<!--          <tr>-->
+<!--            <th>Transaction ID</th>-->
+<!--            <th>Date</th>-->
+<!--            <th>Company</th>-->
+<!--            <th>Product</th>-->
+<!--            <th>Quantity</th>-->
+<!--            <th>Cost</th>-->
+<!--            <th>Location</th>-->
+<!--          </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--          {% for entry in stock_entries %}-->
+<!--          <tr>-->
+<!--            <td>{{ entry.transactionId }}</td>-->
+<!--            <td>{{ entry.date}}</td>-->
+<!--            <td>{{ entry.company }}</td>-->
+<!--            <td>{{ entry.product }}</td>-->
+<!--            <td>{{ entry.quantity }}</td>-->
+<!--            <td>₹{{ entry.totalCost }}</td>-->
+<!--            <td>{{ entry.location }}</td>-->
+<!--          </tr>-->
+<!--          {% empty %}-->
+<!--          <tr><td colspan="7">No stock entries available.</td></tr>-->
+<!--          {% endfor %}-->
+<!--        </tbody>-->
+<!--      </table>-->
+<!--      <h4>Export Stock Entries</h4>-->
+<!--        <div class="export-buttons">-->
+<!--            <a href="{% url 'export_stock_entries_csv' %}" class="csv">📄 CSV</a>-->
+<!--            <a href="{% url 'export_stock_entries_excel' %}" class="excel">📊 Excel</a>-->
+<!--            <a href="{% url 'export_stock_entries_pdf' %}" class="pdf">📄 PDF</a>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="section">-->
+<!--      <h2>🔁 Stock Transfers</h2>-->
+<!--      <table>-->
+<!--        <thead>-->
+<!--          <tr>-->
+<!--            <th>Transaction ID</th>-->
+<!--            <th>Date</th>-->
+<!--            <th>From Location</th>-->
+<!--            <th>To Location</th>-->
+<!--            <th>Product</th>-->
+<!--            <th>Quantity</th>-->
+<!--          </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--          {% for transfer in stock_transfers %}-->
+<!--          <tr>-->
+<!--            <td>{{ transfer.transactionId }}</td>-->
+<!--            <td>{{ transfer.date }}</td>-->
+<!--            <td>{{ transfer.fromLocation }}</td>-->
+<!--            <td>{{ transfer.toLocation }}</td>-->
+<!--            <td>{{ transfer.product }}</td>-->
+<!--            <td>{{ transfer.quantity }}</td>-->
+<!--          </tr>-->
+<!--          {% empty %}-->
+<!--          <tr><td colspan="6">No stock transfers available.</td></tr>-->
+<!--          {% endfor %}-->
+<!--        </tbody>-->
+<!--      </table>-->
+<!--      <h4 style="margin-top: 30px;">Export Stock Transfers</h4>-->
+<!--        <div class="export-buttons">-->
+<!--            <a href="{% url 'export_stock_transfers_csv' %}" class="csv">📄 CSV</a>-->
+<!--            <a href="{% url 'export_stock_transfers_excel' %}" class="excel">📊 Excel</a>-->
+<!--            <a href="{% url 'export_stock_transfers_pdf' %}" class="pdf">📄 PDF</a>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <footer>© 2025 Swanand Inventory Management</footer>-->
+
+<!--  <script>-->
+<!--    function toggleSidebar() {-->
+<!--      const sidebar = document.getElementById("sidebar");-->
+<!--      sidebar.classList.toggle("collapsed");-->
+<!--      const btn = document.querySelector(".toggle-sidebar");-->
+<!--      btn.style.left = sidebar.classList.contains("collapsed") ? '1rem' : '240px';-->
+<!--    }-->
+
+<!--    document.getElementById("toggleDarkMode").addEventListener("click", () => {-->
+<!--      document.body.classList.toggle("dark-mode");-->
+<!--      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");-->
+<!--    });-->
+
+<!--    window.addEventListener("DOMContentLoaded", () => {-->
+<!--      if (localStorage.getItem("theme") === "dark") {-->
+<!--        document.body.classList.add("dark-mode");-->
+<!--      }-->
+<!--    });-->
+<!--  </script>-->
+<!--</body>-->
+<!--</html>-->

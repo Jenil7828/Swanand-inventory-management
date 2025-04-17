@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Transfers PDF</title>
+</head>
+<body>
+    <h1>Stock Transfers- Transaction Log</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Txn ID</th>
+                <th>Date</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Product</th>
+                <th>Qty</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transfer in stock_transfers %}
+                <tr>
+                    <td>{{ transfer.transaction_id }}</td>
+                    <td>{{ transfer.date|date:"Y-m-d" }}</td>
+                    <td>{{ transfer.from_location }}</td>
+                    <td>{{ transfer.to_location }}</td>
+                    <td>{{ transfer.product.name }}</td>
+                    <td>{{ transfer.quantity }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

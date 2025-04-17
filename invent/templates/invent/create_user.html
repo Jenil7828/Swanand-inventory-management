@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create New User</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/create_user.css' %}" />
+  <script src="{% static 'js/create_user.js' %}" defer></script>
+</head>
+<body>
+  <div class="user-form-wrapper">
+    <h2 class="form-title">Create New User</h2>
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="error-block">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        <p>
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <small class="help-text">{{ field.help_text }}</small>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="error-block">{{ error }}</div>
+          {% endfor %}
+        </p>
+      {% endfor %}
+      <button type="submit" class="submit-button">Create User</button>
+    </form>
+  </div>
+</body>
+</html>
+
+

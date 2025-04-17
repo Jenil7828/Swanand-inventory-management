@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8" />
+  <title>Stock Transfer - Swanand Inventory Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="{% static 'css/stock_transfer.css' %}" rel="stylesheet" />
+
+
+</head>
+
+<body>
+  <div class="system-header">Swanand Management System</div>
+  <header>Swanand Inventory Management - Stock Transfer</header>
+
+  <button class="toggle-dark" id="toggleDarkMode">🌓</button>
+  <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+
+  <div class="sidebar" id="sidebar">
+    <h2>📦 Inventory</h2>
+    <a href="{% url 'index' %}">🏠 Home</a>
+    <a href="{% url 'company_product' %}">📋 Company Product</a>
+    <a href="{% url 'stock_transfer' %}">🚚 Stock Transfer</a>
+    <a href="{% url 'transaction_log' %}">🧾 Transaction Log</a>
+    <a href="{% url 'inventory_status' %}">📊 Inventory Status</a>
+  </div>
+
+  <div class="main-content">
+    <h1>🚚 Stock Transfer</h1>
+
+    <div class="section">
+      <label for="fromLocation">From Location:</label>
+      <select id="fromLocation"></select>
+
+      <label for="toLocation">To Location:</label>
+      <select id="toLocation"></select>
+
+      <label for="product">Product:</label>
+      <select id="product"></select>
+
+      <label for="quantity">Quantity:</label>
+      <input type="number" id="quantity" placeholder="Enter quantity" />
+
+      <div>
+        <button onclick="addProduct()">Add to Transfer List</button>
+        <button onclick="resetForm()">Reset Form</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <table id="transferTable">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Cost</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <button onclick="transferStock()">Transfer Stock</button>
+      <a href="{% url 'index' %}"><button>Back to Home</button></a>
+    </div>
+  </div>
+
+  <footer>&copy; 2025 Swanand Inventory Management</footer>
+  <script src="{% static 'js/stock_transfer.js' %}"></script>
+</body>
+
+</html>

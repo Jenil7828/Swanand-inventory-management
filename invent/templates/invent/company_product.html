@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Company Product - Swanand Inventory Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="{% static 'css/company_product.css' %}" rel="stylesheet" />
+</head>
+<body>
+  <div class="system-header">Swanand Management System</div>
+  <header>Swanand Inventory Management - Company Product</header>
+  <button class="toggle-dark" id="toggleDarkMode">🌓</button>
+  <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+
+  <div class="sidebar" id="sidebar">
+    <h2>📦 Inventory</h2>
+    <a href="{% url 'index' %}">🏠 Home</a>
+    <a href="{% url 'company_product' %}">📋 Company Product</a>
+    <a href="{% url 'stock_transfer' %}">🚚 Stock Transfer</a>
+    <a href="{% url 'transaction_log' %}">🧾 Transaction Log</a>
+    <a href="{% url 'inventory_status' %}">📊 Inventory Status</a>
+  </div>
+
+  <div class="main">
+    <h1>📋 Company Products</h1>
+
+    <div class="section">
+      <form method="post">
+        {% csrf_token %}
+        <label>Select Product:</label>
+        <select name="product_id" required>
+          {% for company in companies %}
+            <optgroup label="{{ company.name }}">
+              {% for product in company.product_set.all %}
+                <option value="{{ product.id }}">{{ product.name }} - ₹{{ product.cost }}</option>
+              {% endfor %}
+            </optgroup>
+          {% endfor %}
+        </select>
+
+        <label>Quantity:</label>
+        <input type="number" name="quantity" placeholder="Quantity" required />
+
+        <label>Select Location:</label>
+        {% if request.user.is_superuser %}
+          <select name="location" required>
+            {% for loc, label in locations %}
+              <option value="{{ loc }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <input type="hidden" name="location" value="{{ request.user.location }}">
+        {% endif %}
+
+        <button type="submit" name="add_product">Add Product</button>
+        <button type="submit" name="reset_list">Reset List</button>
+      </form>
+    </div>
+
+    <div class="section">
+      <form method="post">
+        {% csrf_token %}
+        <label>Select Location to Commit:</label>
+        {% if request.user.is_superuser %}
+          <select name="location" required>
+            {% for loc, label in locations %}
+              <option value="{{ loc }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <input type="hidden" name="location" value="{{ request.user.location }}">
+        {% endif %}
+        <button type="submit" name="add_to_stock">Add to Inventory Stock</button>
+      </form>
+    </div>
+
+    <div class="section">
+      <h2>🧾 Stock List</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Cost</th>
+            <th>Total Cost</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+            <tr>
+              <td>{{ entry.product.company.name }}</td>
+              <td>{{ entry.product.name }}</td>
+              <td>{{ entry.quantity }}</td>
+              <td>₹{{ entry.product.cost }}</td>
+              <td>₹{{ entry.total_cost }}</td>
+              <td>
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="entry_id" value="{{ entry.id }}">
+                  <button type="submit" name="delete_entry">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <h3>Total Cost: ₹{{ total_cost }}</h3>
+    </div>
+  </div>
+  <footer>&copy; 2025 Swanand Inventory Management</footer>
+  <script src="{% static 'js/company_product.js' %}"></script>
+</body>
+</html>

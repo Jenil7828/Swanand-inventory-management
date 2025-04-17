@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Entries PDF</title>
+</head>
+<body>
+    <h1>Product Stock Entries-Transaction Log</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Txn ID</th>
+                <th>Date</th>
+                <th>Company</th>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Cost</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in stock_entries %}
+                <tr>
+                    <td>{% if entry.transaction %}{{ entry.transaction.transaction_id }}{% else %}Staged{% endif %}</td>
+                    <td>{{ entry.date|date:"Y-m-d" }}</td>
+                    <td>{{ entry.company.name }}</td>
+                    <td>{{ entry.product.name }}</td>
+                    <td>{{ entry.quantity }}</td>
+                    <td>₹{{ entry.total_cost|floatformat:2 }}</td>
+                    <td>{{ entry.location }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
