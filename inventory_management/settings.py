@@ -20,10 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xfx$a!%9xc#8++d0(pm5e_a!5j!ppwe!%88ljr1au35##e5)h2'
+# SECRET_KEY = 'django-insecure-xfx$a!%9xc#8++d0(pm5e_a!5j!ppwe!%88ljr1au35##e5)h2'
+# import os
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+DEBUG = os.environ.get('DEBUG', '') != 'False'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'invent.CustomUser'  # Replace 'your_app' with your actual app name
