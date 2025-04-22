@@ -29,7 +29,11 @@ DEBUG = os.environ.get('DEBUG', '') != 'False'
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'swanand-inventory-management.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
 AUTH_USER_MODEL = 'invent.CustomUser'  # Replace 'your_app' with your actual app name
 LOGIN_URL = '/admin/login/'  # or custom login page
 LOGIN_REDIRECT_URL = 'index'
