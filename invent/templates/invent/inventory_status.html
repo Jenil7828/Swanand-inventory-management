@@ -1,136 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
-{% load static %}
 <head>
-  <meta charset="UTF-8" />
-  <title>Swanand Inventory Management - Inventory Status</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="{% static 'css/inventory_status.css' %}" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-  <script src="{% static 'js/inventory_status.js' %}" defer></script>
+    <meta charset="UTF-8">
+    <title>Swanand Inventory Management - Inventory Status</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        .container {
+            padding: 2rem;
+        }
+        .filter-section {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        select {
+            padding: 0.6rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            padding: 1rem;
+            background-color: #f1f1f1;
+            font-size: 0.9rem;
+        }
+        .back-home {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.7rem 1.5rem;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+    </style>
 </head>
-
 <body>
-  <div class="system-header">Swanand Management System</div>
-  <header>Swanand Inventory Management - Inventory Status</header>
-  <button class="toggle-dark" id="toggleDarkMode">🌓</button>
-  <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
 
-  <div class="sidebar" id="sidebar">
-    <h2>📦 Inventory</h2>
-    <a href="{% url 'index' %}">🏠 Home</a>
-    <a href="{% url 'company_product' %}">📋 Company Product</a>
-    <a href="{% url 'stock_transfer' %}">🚚 Stock Transfer</a>
-    <a href="{% url 'transaction_log' %}">🧾 Transaction Log</a>
-    <a href="{% url 'inventory_status' %}">📊 Inventory Status</a>
-  </div>
+<header>
+    Swanand Inventory Management - Inventory Status
+</header>
 
-  <div class="main-content">
-    <h1>📊 Inventory Status</h1>
-
-    <div class="section">
-      <form method="get">
-        <label for="location">Location:</label>
-        <select name="location" id="location" onchange="this.form.submit()">
-          <option value="All" {% if selected_location == 'All' %}selected{% endif %}>All Locations</option>
-          {% for loc, label in locations %}
-          <option value="{{ loc }}" {% if selected_location == loc %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
+<div class="container">
+    <div class="filter-section">
+        <label for="locationFilter">Select Location:</label>
+        <select id="locationFilter" onchange="filterStock()">
+            <option value="Lonavala" selected>Lonavala</option>
+            <option value="Pune">Pune</option>
+            <option value="Pune2">Pune2</option>
+            <option value="Nashik">Nashik</option>
+            <option value="Girgaon">Girgaon</option>
+            <option value="Mindgym">Mindgym</option>
+            <option value="Kharghar">Kharghar</option>
+            <option value="All">All Locations</option>
         </select>
-
-        <input type="text" name="search" placeholder="Search product..." value="{{ search_query|default:'' }}">
-        <button type="submit">Apply Filters</button>
-      </form>
-
-      <div class="export-buttons">
-        <form method="get" action="{% url 'export_inventory_csv' %}">
-          <input type="hidden" name="location" value="{{ selected_location }}">
-          <input type="hidden" name="search" value="{{ search_query|default:'' }}">
-          <button type="submit">📄 CSV</button>
-        </form>
-        <form method="get" action="{% url 'export_inventory_excel' %}">
-          <input type="hidden" name="location" value="{{ selected_location }}">
-          <input type="hidden" name="search" value="{{ search_query }}">
-          <button type="submit">📊 Excel</button>
-        </form>
-        <form method="get" action="{% url 'export_inventory_pdf' %}">
-          <input type="hidden" name="location" value="{{ selected_location }}">
-          <input type="hidden" name="search" value="{{ search_query }}">
-          <button type="submit">📕 PDF</button>
-        </form>
-      </div>
     </div>
 
-    <div class="section">
-      <table>
+    <table id="stockTable">
         <thead>
-          <tr>
-            <th>Product Name</th>
-            <th>Location</th>
-            <th>Current Stock</th>
-          </tr>
+            <tr>
+                <th>Product Name</th>
+                <th>Location</th>
+                <th>Current Stock</th>
+            </tr>
         </thead>
         <tbody>
-          {% for item in inventory %}
-          <tr class="{% if item.quantity < 10 %}low-stock{% endif %}">
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.location }}</td>
-            <td>
-              <div style="text-align: left;">
-                <div style="background-color: #eee; border-radius: 5px; overflow: hidden; height: 20px;">
-                  <div style="height: 100%; width: {{ item.quantity }}%; max-width: 100%; background-color: {% if item.quantity < 10 %}#ff4d4d{% elif item.quantity < 30 %}#ffa500{% else %}#4CAF50{% endif %}; text-align: center; color: white; line-height: 20px;">
-                    {{ item.quantity }}
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="3">No inventory available for this selection.</td>
-          </tr>
-          {% endfor %}
+            <!-- Stock Data Will Appear Here -->
         </tbody>
-        {% if total_quantity %}
-        <tfoot>
-          <tr style="font-weight: bold;">
-            <td colspan="2">Total Stock</td>
-            <td>{{ total_quantity }}</td>
-          </tr>
-        </tfoot>
-        {% endif %}
-      </table>
+    </table>
+
+    <div style="text-align: center;">
+        <a href="index.html" class="back-home">Back to Home</a>
     </div>
+</div>
 
-    <div class="section">
-      <h3>📧 Email Report</h3>
-      <form action="{% url 'email_inventory_report' %}" method="POST">
-        {% csrf_token %}
-        <label for="email">Enter Email:</label>
-        <input type="email" name="email" required placeholder="you@example.com">
-        <label for="format">Choose Format:</label>
-        <select name="format">
-          <option value="csv">CSV</option>
-          <option value="excel">Excel (XLSX)</option>
-          <option value="pdf">PDF</option>
-        </select>
-        <button type="submit">Send</button>
-      </form>
-    </div>
+<footer>
+    &copy; 2025 Swanand Inventory Management | All rights reserved.
+</footer>
 
-    <div class="section" id="charts-container">
-      <!-- Safe way to inject JSON -->
-      <script id="stock-data" type="application/json">
-        {{ inventory_data_json|safe }}
-      </script>
+<script>
+    // Dummy Data Fetch
+    let stockEntries = JSON.parse(localStorage.getItem('stockEntries')) || [];
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 
+    let stockData = {};
 
-      <!-- The charts will be rendered here dynamically -->
-    </div>
-  </div>
+    function calculateStock() {
+        stockData = {};
 
-  <footer>&copy; 2025 Swanand Inventory Management</footer>
+        // Add initial stock from stockEntries
+        stockEntries.forEach(entry => {
+            const key = entry.product + "_" + entry.location;
+            if (!stockData[key]) {
+                stockData[key] = 0;
+            }
+            stockData[key] += Number(entry.quantity);
+        });
+
+        // Adjust stock based on transfers
+        transactions.forEach(transfer => {
+            transfer.products.forEach(item => {
+                const fromKey = item.product + "_" + transfer.fromLocation;
+                const toKey = item.product + "_" + transfer.toLocation;
+
+                if (!stockData[fromKey]) stockData[fromKey] = 0;
+                if (!stockData[toKey]) stockData[toKey] = 0;
+
+                stockData[fromKey] -= Number(item.quantity);
+                stockData[toKey] += Number(item.quantity);
+            });
+        });
+    }
+
+    function renderTable(location = "Lonavala") {
+        const tbody = document.querySelector('#stockTable tbody');
+        tbody.innerHTML = '';
+
+        for (const key in stockData) {
+            const [product, loc] = key.split('_');
+            if (location === "All" || loc === location) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${product}</td>
+                    <td>${loc}</td>
+                    <td>${stockData[key]}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+    }
+
+    function filterStock() {
+        const selectedLocation = document.getElementById('locationFilter').value;
+        renderTable(selectedLocation);
+    }
+
+    // Initialize page
+    calculateStock();
+    renderTable(); // Default to Lonavala
+</script>
+
 </body>
-
 </html>

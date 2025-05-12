@@ -1,62 +1,114 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Swanand Inventory Management</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swanand Inventory Management</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .card-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: inherit;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        footer {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
 </head>
+
 <body>
-  <header>
-    <h1>Swanand Inventory Management</h1>
-    <button class="dark-mode-toggle" id="toggleDarkMode">🌙</button>
-  </header>
+    <header>
+        <h1>Swanand Inventory Management</h1>
+    </header>
 
-  <main class="card-container">
-    <a href="{% url 'company_product' %}" class="card">
-      <div class="icon">📦</div>
-      <div class="card-title">Company Product</div>
-    </a>
+    <main class="card-container">
+        <a href="company_product.html" class="card">
+            <div class="icon">📦</div>
+            <div class="card-title">Company Product</div>
+        </a>
 
-    <a href="{% url 'stock_transfer' %}" class="card">
-      <div class="icon">🚚</div>
-      <div class="card-title">Stock Transfer</div>
-    </a>
+        <a href="stock_transfer.html" class="card">
+            <div class="icon">🚚</div>
+            <div class="card-title">Stock Transfer</div>
+        </a>
 
-    <a href="{% url 'transaction_log' %}" class="card">
-      <div class="icon">📝</div>
-      <div class="card-title">Transaction Log</div>
-    </a>
+        <a href="transaction_log.html" class="card">
+            <div class="icon">📝</div>
+            <div class="card-title">Transaction Log</div>
+        </a>
 
-    <a href="{% url 'inventory_status' %}" class="card">
-      <div class="icon">📊</div>
-      <div class="card-title">Inventory Status</div>
-    </a>
+        <a href="inventory_status.html" class="card">
+            <div class="icon">📊</div>
+            <div class="card-title">Inventory Status</div>
+        </a>
 
-    {% if request.user.is_super_admin %}
-      <a href="{% url 'create_user' %}" class="card">
-        <div class="icon">➕</div>
-        <div class="card-title">Add User</div>
-      </a>
+        <a href="download_db.html" class="card">
+            <div class="icon">⬇️</div>
+            <div class="card-title">Download DB</div>
+        </a>
+    </main>
 
-      <!-- Admin Panel card with camouflage style -->
-      <a href="/admin/" class="admin-panel-link">
-        <div class="icon"><i class="fas fa-cogs"></i></div> <!-- Admin panel icon -->
-        <div class="card-title">Visit Admin Panel</div>
-      </a>
-    {% endif %}
-  </main>
-
-  <div class="welcome-message">
-    Welcome! Manage your products, track stock movements, and view inventory insights with ease.
-  </div>
-
-  <footer>
-    © 2025 Swanand Inventory Management
-  </footer>
-
-  <script src="{% static 'js/script.js' %}"></script>
+    <footer>
+        © 2025 Swanand Inventory Management
+    </footer>
 </body>
 </html>
