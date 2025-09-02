@@ -150,4 +150,4 @@ Want to improve this project? Here’s how:
 
 
 
-> Made with 💡 by [Jenil Rathod](https://github.com/Jenil7828)
+> Made with 💡 by [Jenil Rathod](https://github.com/Jenil7828) [Prayag Kad](https://github.com/PrayagKad)
